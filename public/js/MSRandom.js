@@ -2,7 +2,7 @@
 // https://referencesource.microsoft.com/#mscorlib/system/random.cs,03bb9c8b76f56119
 
 export default class MSRandom {
-	constructor(seed) {
+	constructor(seed = Date.now() % 2 ** 31 - 1) {
 		// this._MBIG = this._MBIG;
 		this._MBIG = 2 ** 31 - 1;
 		this._MSEED = 161803398;
@@ -22,7 +22,8 @@ export default class MSRandom {
 		this.seedArray[55] = mj;
 		let mk = 1;
 
-		for (let i = 1; i < 55; i++) {  //Apparently the range [1..55] is special (Knuth) and so we're wasting the 0'th position.
+		//Apparently the range [1..55] is special (Knuth) and so we're wasting the 0'th position.
+		for (let i = 1; i < 55; i++) {
 			let ii = (21 * i) % 55;
 			this.seedArray[ii] = mk;
 			mk = mj - mk;
@@ -45,7 +46,7 @@ export default class MSRandom {
 	sample() {
 		//Including this division at the end gives us significantly improved
 		//random number distribution.
-		return this.internalSample() * (1.0 / this._MBIG);
+		return this.internalSample() * 1 / this._MBIG;
 	}
 
 	getSampleForLargeRange() {
@@ -56,14 +57,10 @@ export default class MSRandom {
 
 		let result = this.internalSample();
 		// Note we can't use addition here. The distribution will be bad if we do that.
-		const negative = (this.internalSample() % 2 === 0) ? true : false;  // decide the sign based on second sample
-		if (negative) {
-			result = -result;
-		}
-		let d = result;
-		d += (this._MBIG - 1); // get a number in range [0 .. 2 * Int32MaxValue - 1)
-		d /= 2 * this._MBIG - 1;
-		return d;
+		// decide the sign based on second sample
+		if (this.internalSample() % 2 === 0) result = -result;
+
+		return (result + this._MBIG - 1) / (2 * this._MBIG - 1);
 	}
 
 	internalSample() {
@@ -94,12 +91,10 @@ export default class MSRandom {
 		if (minValue > maxValue)
 			throw new Error(`${minValue} must be less than or equal to ${maxValue}`);
 
-		let range = maxValue - minValue;
+		const range = maxValue - minValue;
 
-		if (range <= this._MBIG) {
-			return (parseInt(this.sample() * range) + minValue);
-		} else {
-			return parseInt((this.getSampleForLargeRange() * range) + minValue);
-		}
+		return range < this._MBIG
+			? parseInt(this.sample() * range) + minValue
+			: parseInt((this.getSampleForLargeRange() * range) + minValue);
 	}
 }

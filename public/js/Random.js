@@ -1,7 +1,7 @@
 // Code adapted from .NET System.Random
 // https://referencesource.microsoft.com/#mscorlib/system/random.cs,03bb9c8b76f56119
 
-export default class MSRandom {
+export default class Random {
 	constructor(seed = Date.now() % 2 ** 31 - 1) {
 		// this._MBIG = this._MBIG;
 		this._MBIG = 2 ** 31 - 1;

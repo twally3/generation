@@ -1,6 +1,6 @@
 // Code adapted from .NET System.Random
 // https://referencesource.microsoft.com/#mscorlib/system/random.cs,03bb9c8b76f56119
-
+// TODO: add next double and range
 export default class Random {
 	constructor(seed = Date.now() % 2 ** 31 - 1) {
 		// this._MBIG = this._MBIG;

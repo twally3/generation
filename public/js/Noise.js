@@ -1,7 +1,7 @@
 import PerlinNoise from './PerlinNoise.js';
 import Random from './Random.js';
 import Vector2 from './Vector2.js';
-// import { inverseLerp } from './maths.js';
+import { map } from './maths.js';
 const perlinNoise = new PerlinNoise;
 
 export default class Noise {
@@ -45,11 +45,12 @@ export default class Noise {
 			}
 		}
 
-		// for (let y = 0; y < mapHeight; y++) {
-		// 	for (let x = 0; x < mapWidth; x++) {
-		// 		noiseMap[x][y] = inverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x][y]);
-		// 	}
-		// }
+		for (let y = 0; y < mapHeight; y++) {
+			for (let x = 0; x < mapWidth; x++) {
+				// noiseMap[x][y] = inverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x][y]);
+				noiseMap[x][y] = map(noiseMap[x][y], minNoiseHeight, maxNoiseHeight, 0, 1);
+			}
+		}
 
 		return noiseMap;
 	}

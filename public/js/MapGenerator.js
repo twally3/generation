@@ -2,6 +2,8 @@ import Noise from './Noise.js';
 import { drawTexture } from './render.js';
 import Vector2 from './Vector2.js';
 import TextureGenerator from './TextureGenerator.js';
+import FalloffGenerator from './FalloffGenerator.js';
+import { clamp } from './maths.js';
 
 export default class MapGenerator {
 	constructor(ctx) {
@@ -15,6 +17,8 @@ export default class MapGenerator {
 		this.persistance = 0.5;
 		this.lacunarity = 2;
 		this.offset = new Vector2(0, 0);
+		this.useFalloff = true;
+		this.falloffMap = FalloffGenerator.generateFalloffMap(this.mapWidth);
 
 		// Definitely load this from JSON
 		this.regions = [
@@ -31,6 +35,7 @@ export default class MapGenerator {
 		this.DrawMode = {
 			noiseMap: Symbol('noiseMap'),
 			colourMap: Symbol('colourMap'),
+			falloffMap: Symbol('falloffMap')
 		};
 		this.drawMode = this.DrawMode.colourMap;
 
@@ -49,7 +54,9 @@ export default class MapGenerator {
 		const imageData = this.ctx.createImageData(this.mapWidth, this.mapHeight);
 		for (let y = 0; y < this.mapHeight; y++) {
 			for (let x = 0; x < this.mapWidth; x++) {
+				if (this.useFalloff) noiseMap[x][y] = clamp(0, 1, noiseMap[x][y] - this.falloffMap[x][y]);
 				const currentHeight = noiseMap[x][y];
+
 				for (let i = 0; i < this.regions.length; i++) {
 					if (currentHeight <= this.regions[i].height) {
 						const linearCoord = (y * this.mapWidth + x) * 4;
@@ -70,6 +77,8 @@ export default class MapGenerator {
 			drawTexture(this.ctx, TextureGenerator.textureFromHeightMap(this.ctx, noiseMap));
 		} else if (this.drawMode === this.DrawMode.colourMap) {
 			drawTexture(this.ctx, imageData);
+		} else if (this.drawMode === this.DrawMode.falloffMap) {
+			drawTexture(this.ctx, TextureGenerator.textureFromHeightMap(this.ctx, FalloffGenerator.generateFalloffMap(this.mapHeight)));
 		}
 
 	}

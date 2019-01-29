@@ -9,8 +9,9 @@ export default class MapGenerator {
 	constructor(ctx) {
 		this.ctx = ctx;
 		// TODO: Pull this shit out
-		this.mapWidth = 300;
-		this.mapHeight = 300;
+		this.mapChunkSize = 200;
+		this.mapWidth = this.mapChunkSize;
+		this.mapHeight = this.mapChunkSize;
 		this.seed = 0;
 		this.noiseScale = 60;
 		this.octaves = 4;

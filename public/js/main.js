@@ -4,9 +4,8 @@ import Vector2 from './Vector2.js';
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 // TODO: Maybe move this somwhere when I create canvas textures
-ctx.imageSmoothingEnabled = true;
-canvas.width = 300;
-canvas.height = 300;
+canvas.width = 600;
+canvas.height = 600;
 document.querySelector('body').appendChild(canvas);
 
 let scale_slider = document.createElement('input');
